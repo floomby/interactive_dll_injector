@@ -20,6 +20,7 @@
 				</Compiler>
 				<Linker>
 					<Add library="user32" />
+                    <Add library="psapi" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -37,10 +38,29 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="user32" />
+                    <Add library="psapi" />
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-std=c++11" />
+			<Add option="-Wextra" />
+		</Compiler>
+		<Unit filename="algs.cpp" />
+		<Unit filename="algs.h" />
+		<Unit filename="cmds.cpp" />
+		<Unit filename="cmds.h" />
+		<Unit filename="dll_utils.cpp" />
+		<Unit filename="dll_utils.h" />
+		<Unit filename="include/analyze.h" />
+		<Unit filename="include/memory_analyzer.h" />
+		<Unit filename="include/piper.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="main.h" />
+		<Unit filename="src/analyze.cpp" />
+		<Unit filename="src/memory_analyzer.cpp" />
+		<Unit filename="src/piper.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
