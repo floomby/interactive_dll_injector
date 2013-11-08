@@ -1,11 +1,16 @@
 #include "../include/memory_analyzer.h"
 
-memory_analyzer::memory_analyzer()
-{
-    PROCESS_MEMORY_COUNTERS mem_info;
+//the two key functions here are
+//GetMappedFileName and QueryWorkingSet
 
-    //this is not quite the right thing
-    GetProcessMemoryInfo(GetCurrentProcess(), &mem_info, mem_info.cb);
+memory_analyzer::memory_analyzer(void *addr)
+{
+    //not sure exactly how to do this
+    PSAPI_WORKING_SET_EX_INFORMATION mem_info;
+
+    mem_info.VirtualAddress = addr;
+
+    QueryWorkingSet(GetCurrentProcess(), &mem_info, sizeof(PSAPI_WORKING_SET_INFORMATION));
 }
 
 memory_analyzer::~memory_analyzer()
