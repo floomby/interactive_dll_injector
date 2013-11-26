@@ -13,9 +13,12 @@ namespace cmd
 {
 void init(piper *pipe);
 
+void register_func(char cmd, void(*func)(char *));
+void call_func(char cmd, char *arg);
+
 void echo(char *arg);
 void kill(char *arg);
-void dump(char *arg);
+void disasm(char *arg);
 void call(char *arg);
 }
 

@@ -2,28 +2,29 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="testdll" />
+		<Option title="memdumper.dll" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/testdll" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/memdumper.dll" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-DBUILD_DLL" />
 				</Compiler>
 				<Linker>
 					<Add library="user32" />
-					<Add library="psapi" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/testdll" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/memdumper.dll" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -37,34 +38,16 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="user32" />
-					<Add library="psapi" />
 				</Linker>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add option="-pedantic" />
-			<Add option="-std=c++11" />
-			<Add option="-Wextra" />
-		</Compiler>
-		<Unit filename="algs.cpp" />
-		<Unit filename="algs.h" />
-		<Unit filename="cmds.cpp" />
-		<Unit filename="cmds.h" />
-		<Unit filename="dll_utils.cpp" />
-		<Unit filename="dll_utils.h" />
-		<Unit filename="include/analyze.h" />
-		<Unit filename="include/memory_analyzer.h" />
-		<Unit filename="include/piper.h" />
+		<Unit filename="../common/piper.cpp" />
+		<Unit filename="../common/piper.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="main.h" />
-		<Unit filename="src/analyze.cpp" />
-		<Unit filename="src/memory_analyzer.cpp" />
-		<Unit filename="src/piper.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -62,7 +62,7 @@
 1383855505 c:\users\josh\desktop\interactive_dll_injector\testdll\dll_utils.h
 	<windows.h>
 
-1383895854 source:c:\users\josh\desktop\interactive_dll_injector\testdll\main.cpp
+1383943282 source:c:\users\josh\desktop\interactive_dll_injector\testdll\main.cpp
 	<cstdio>
 	<cstring>
 	<windows.h>
@@ -76,30 +76,31 @@
 	<windows.h>
 	"../dll_utils.h"
 
-1383895399 c:\users\josh\desktop\interactive_dll_injector\testdll\cmds.h
+1383943074 c:\users\josh\desktop\interactive_dll_injector\testdll\cmds.h
 	<cstdio>
 	<cstring>
 	<windows.h>
 	"include/piper.h"
 	"include/analyze.h"
 
-1383894470 c:\users\josh\desktop\interactive_dll_injector\testdll\include\analyze.h
+1383941456 c:\users\josh\desktop\interactive_dll_injector\testdll\include\analyze.h
 	<cstdint>
+	<cstdio>
 	"../algs.h"
 
-1383894518 source:c:\users\josh\desktop\interactive_dll_injector\testdll\src\analyze.cpp
+1383941757 source:c:\users\josh\desktop\interactive_dll_injector\testdll\src\analyze.cpp
 	"../include/analyze.h"
 
 1383872154 source:c:\users\josh\desktop\interactive_dll_injector\testdll\src\piper.cpp
 	"../include/piper.h"
 
-1383896098 source:c:\users\josh\desktop\interactive_dll_injector\testdll\cmds.cpp
+1383942587 source:c:\users\josh\desktop\interactive_dll_injector\testdll\cmds.cpp
 	"cmds.h"
 
-1383901731 source:c:\users\josh\desktop\interactive_dll_injector\testdll\src\memory_analyzer.cpp
+1383929574 source:c:\users\josh\desktop\interactive_dll_injector\testdll\src\memory_analyzer.cpp
 	"../include/memory_analyzer.h"
 
-1383901463 c:\users\josh\desktop\interactive_dll_injector\testdll\include\memory_analyzer.h
+1383929547 c:\users\josh\desktop\interactive_dll_injector\testdll\include\memory_analyzer.h
 	<windows.h>
 	<Psapi.h>
 

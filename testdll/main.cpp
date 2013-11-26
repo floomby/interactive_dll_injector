@@ -8,21 +8,28 @@
 
 #define PIPE_NAME "\\\\.\\pipe\\apipe"
 
+//It will be important to avoid alocating
+//on the heap at all cost after injection
+//that beig said there are still ways to
+//use the heap to a limited degree
+
+//additionally if Psapi.dll is not loaded
+//and we are attempiting to be stealthy
+//we can load just the functions we need
+
+//memory snapshoting can be done in several
+//ways, the one I am implementing now uses
+//Psapi functions called from the injected
+//dll, But an external program can snapshot
+//memory of a program with attaching a
+//debugger (using the same functions and
+//OpenProcess), however this is less stealthy
+
 piper *mypipe = nullptr;
 
 //calling needs to be convention aware
 //the way that comes to mind right now
 //is to use assemmbly exerps to call functions
-
-void call(void *addr)
-{
-    ((void (*)())(addr))();
-}
-
-//void dump(void *addr, size_t len)
-//{
-//    mypipe->raw_write((uint8_t *)addr, len);
-//}
 
 void thread_main();
 
@@ -51,78 +58,17 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
     return TRUE;
 }
 
-#define p(x) (x-0x61)
-
-void cmd_default(char *arg){ mypipe->write("unrecognized cmd"); }
-
-static void* cmd_table[] = {
-(void *)&cmd_default,   // "a"
-(void *)&cmd_default,   // "b"
-(void *)&cmd_default,   // "c"
-(void *)&cmd_default,   // "d"
-(void *)&cmd_default,   // "e"
-(void *)&cmd_default,   // "f"
-(void *)&cmd_default,   // "g"
-(void *)&cmd_default,   // "h"
-(void *)&cmd_default,   // "i"
-(void *)&cmd_default,   // "j"
-(void *)&cmd_default,   // "k"
-(void *)&cmd_default,   // "l"
-(void *)&cmd_default,   // "m"
-(void *)&cmd_default,   // "n"
-(void *)&cmd_default,   // "o"
-(void *)&cmd_default,   // "p"
-(void *)&cmd_default,   // "q"
-(void *)&cmd_default,   // "r"
-(void *)&cmd_default,   // "s"
-(void *)&cmd_default,   // "t"
-(void *)&cmd_default,   // "u"
-(void *)&cmd_default,   // "v"
-(void *)&cmd_default,   // "w"
-(void *)&cmd_default,   // "x"
-(void *)&cmd_default,   // "y"
-(void *)&cmd_default    // "z"
-};
-
-//for registering functions as commands
-void register_func(char cmd, void(*func)(char *));
-void call_func(char cmd, char *arg);
-
 //called after pipe is constructed
 void thread_main()
 {
     char *str = nullptr; //, *cmd_str = nullptr, *arg_str = nullptr;
 
     cmd::init(mypipe);
-    register_func('e', &cmd::echo);
-    register_func('k', &cmd::kill);
-    register_func('d', &cmd::dump);
-    register_func('c', &cmd::call);
 
     for(;;){
         str = mypipe->read();
-        call_func(*str, str + 1);
+        cmd::call_func(*str, str + 1);
 
         delete[] str;
     }
-}
-
-void call_func(char cmd, char *arg)
-{
-    if(cmd < 'a' || 'z' < cmd){
-        mypipe->write("invalid command");
-        return;
-    }
-
-    ((void (*)(char *))cmd_table[p(cmd)])(arg);
-}
-
-void register_func(char cmd, void (*func)(char *))
-{
-    if(cmd < 'a' || 'z' < cmd){
-        mypipe->write("invalid command registration");
-        return;
-    }
-
-    cmd_table[p(cmd)] = (void *)func;
 }

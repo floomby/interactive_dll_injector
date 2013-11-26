@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1384322905 source:c:\users\josh\desktop\interactive_dll_injector\memdumper.dll\main.cpp
+	<windows.h>
+	<Psapi.h>
+	"../common/piper.h"
+
+1384308701 c:\users\josh\desktop\interactive_dll_injector\common\piper.h
+	<windows.h>
+	"common.h"
+
+1384322696 c:\users\josh\desktop\interactive_dll_injector\common\common.h
+
+1384308669 source:c:\users\josh\desktop\interactive_dll_injector\common\piper.cpp
+	"piper.h"
+

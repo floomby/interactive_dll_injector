@@ -1,7 +1,5 @@
 #include <windows.h>
 #include <stdio.h>
-//#include <tlhelp32.h>
-//#include <shlwapi.h>
 
 //TODO c++ style IO
 
@@ -10,11 +8,13 @@
 
 using namespace std;
 
+#include "../common/common.h"
+
 #include "include/piper.h"
 #include "include/prompter.h"
 
-#define PIPE_NAME "\\\\.\\pipe\\apipe"
-#define DLL_NAME "C:\\Users\\Josh\\Desktop\\hooker\\testdll.dll"
+#define DLL_NAME MY_STAGER_NAME
+//#define DLL_NAME "C:\\Users\\Josh\\Desktop\\interactive_dll_injector\\testdll.dll"
 
 #define CREATE_THREAD_ACCESS (PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ)
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     }
 
     Sleep(500);
-    piper mypipe(PIPE_NAME);
+    piper mypipe(MY_PIPE_NAME);
 
     //do prompt now
 

@@ -36,6 +36,7 @@ void prompter::prompt()
         this->the_pipe->write(tmp.c_str());
 
         if(cmd == 'd'){
+            //Sleep(500);
             disasm adis(this->the_pipe->raw_read());
             adis.write();
 
@@ -57,6 +58,6 @@ void prompter::help()
     cout << "\te - echo" << endl;
     cout << "\tk - kill" << endl;
     cout << "\tq - quit" << endl;
-    cout << "\td - dump" << endl;
+    cout << "\td - disasm" << endl;
     cout << "\tc - call" << endl;
 }
