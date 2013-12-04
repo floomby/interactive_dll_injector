@@ -1,0 +1,5 @@
+Things that we need for module development
+1) auto-typifier script
+2) a Makefile driven approach
+3) template module
+4) script to automate creation of new module
