@@ -1,3 +1,5 @@
+#include "framework.h"
+
 #include "wrap.h"
 
 #include <cstdint>
@@ -9,12 +11,16 @@ using namespace std;
 
 //TODO: allow get all c primatives
 
-//fixme:have a memory leak(auto_ptr can solve this easily)
+namespace framework
+{
+
+vector<void *> free_list;
+
 uint64_t string_to_char_ptr(string str)
 {
-    char *ret = (char *)malloc(strlen(str.c_str()));
-    assert(ret);
+    char *ret = (char *)malloc(str.length() + 1);
     strcpy(ret, str.c_str());
+    free_list.push_back(ret);
     return (uint64_t)ret;
 };
 uint64_t string_to_unsigned(string str){ return (uint64_t)atoi(str.c_str()); }
@@ -27,7 +33,7 @@ static unordered_map<string, void *> lookup = {
 {"const char *", (void *)&string_to_char_ptr}
 };
 
-
+//TODO this return should be more flexible
 char *wrap(vector<string> *args, vector<string> *types, void *fp)
 {
     char *(*real_fp)() = (char *(*)())fp;
@@ -38,7 +44,7 @@ char *wrap(vector<string> *args, vector<string> *types, void *fp)
  
     vector<uint64_t> converted;
 
-    //fixme: not use this(need a deque)
+    //fixme: not use this(need a deque) <- what was I talking about????
     int cnt = 0;
     
     for(string str : *types){
@@ -107,5 +113,85 @@ char *wrap(vector<string> *args, vector<string> *types, void *fp)
             return (char *)"fixme:too many arguments";
     }
     
+    for(void *it : free_list){
+        free(it);
+    }
+    
     return (real_fp)();
+}
+
+void call(char *cmd, unordered_map<string, string> *dllMap)
+{
+    string module(strtok(cmd, ":"));
+
+    string func(strtok(NULL, "("));
+
+    char *args_raw = strtok(NULL, ")");
+
+    vector<string> args;
+
+    if(args_raw){
+        args.push_back(strtok(args_raw, ","));
+
+        char *it = NULL;
+
+        while((it = strtok(NULL, ","))){
+            args.push_back(string(it));
+        }
+    }
+
+    if(!dllMap->count(module)){
+        if(!load(module, dllMap)){
+            erl_send("loading module");
+        }else{
+            erl_send("failed to  load module");
+            return;
+        }
+    }
+
+    void *fp = (void *)GetProcAddress(GetModuleHandle(module.c_str()), func.c_str());
+
+    func.append("TYPE");
+
+    const char *types_raw = *(const char **)GetProcAddress(GetModuleHandle(module.c_str()), func.c_str());    
+    
+    char *types_raw_cpy = (char *)malloc(strlen(types_raw));
+    assert(types_raw_cpy);
+    strcpy(types_raw_cpy, types_raw);
+
+    vector<string> types;
+
+    if(strlen(types_raw_cpy) > 1){
+        types.push_back(strtok(types_raw_cpy, ","));
+
+        char *it = NULL;
+
+        while((it = strtok(NULL, ","))){
+            types.push_back(string(it));
+        }
+    }
+
+    char *ret = wrap(&args, &types, fp);
+
+    erl_send(ret);
+
+    free(types_raw_cpy);
+    free(ret);
+}
+
+bool load(string module, unordered_map<string, string> *dllMap)
+{
+    char cwd_buf[1024];
+    string dllName(_getcwd(cwd_buf, sizeof(cwd_buf)));
+    
+    dllName += "\\modules\\" + module + "\\" + module + ".dll";
+    
+    if(!LoadLibraryA(dllName.c_str())){
+        return true;
+    }
+    
+    dllMap->insert(make_pair<string, string>(module.c_str(), dllName.c_str()));
+    return false;
+}
+
 }

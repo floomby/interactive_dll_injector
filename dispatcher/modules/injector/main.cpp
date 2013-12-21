@@ -3,8 +3,7 @@
 
 #include <windows.h>
 
-#define ERR_MSG "failed"
-#define OK_MSG  "ok"
+#include "../module.h"
 
 #define CREATE_THREAD_ACCESS (PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ)
 
@@ -27,6 +26,7 @@ extern "C" __declspec(dllexport) char *inject(unsigned ProcessID, const char *dl
         return ret;
     }
 
+    //fixme: it would be nice if we could error check the injection
     LoadLibAddy = (LPVOID)GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
 
     RemoteString = (LPVOID)VirtualAllocEx(Proc, NULL, strlen(dllName), MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);

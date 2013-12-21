@@ -1,0 +1,10 @@
+This is the framework to coonect to the erlayer and deal with modules.
+
+The way this thing is going to work is to open a socket to connet to
+the erlayer and tell the erlayer its namespace. Within the namespace
+is the modules that the framework loads. The modules are of course 
+dll's that have the function declarations exported via the method that
+I was using for the previous version of the dispatcher. This leaves a
+very flexible method to do things with.
+
+
