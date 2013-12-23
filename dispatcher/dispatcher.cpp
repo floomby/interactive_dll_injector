@@ -10,16 +10,25 @@ int main(int argc, char *argv[])
         cerr << "usage: " << argv[0] << " <server> <port>" << endl;
         exit(EXIT_FAILURE);
     }
-
-    // framework::init(argv[0]);
-    framework::erl_connect(argv[1], argv[2]);
     
-    framework::erl_send("blah");
+    try
+    {
+    try
+    {
+    framework::fw test_fw(argv[1], argv[2], "dispatcher");
     
-    framework::process();
-    
-    //TODO should not be done here
-    WSACleanup();
-
+    test_fw.process();
+    }
+    catch (char *err)
+    {
+    // TODO fix problems with the exception handleing
+    cerr << err << endl;
+    exit(EXIT_FAILURE);
+    }
+    }
+    catch (string err)
+    {
+    cout << err.c_str() << endl;
+    }
     return 0;
 }

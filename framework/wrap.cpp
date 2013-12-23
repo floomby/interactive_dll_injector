@@ -1,20 +1,21 @@
 #include "framework.h"
 
-#include "wrap.h"
+#include <iostream>
 
-#include <cstdint>
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
+using std::cout;
+using std::endl;
 
-using namespace std;
-
-//TODO: allow get all c primatives
+using std::unordered_map;
+using std::string;
+using std::vector;
 
 namespace framework
 {
 
-vector<void *> free_list;
+namespace convert
+{
+
+static vector<void *> free_list;
 
 uint64_t string_to_char_ptr(string str)
 {
@@ -27,15 +28,36 @@ uint64_t string_to_unsigned(string str){ return (uint64_t)atoi(str.c_str()); }
 uint64_t string_to_unsignedlong(string str){ return (uint64_t)strtoul(str.c_str(), NULL, 0); }
 uint64_t string_to_unsignedlonglong(string str){ return strtoull(str.c_str(), NULL, 0); }
 
+void str_free()
+{
+    for(void *tmp : free_list){
+        free(tmp);
+    }
+}
+
 //the functions to convert types
 static unordered_map<string, void *> lookup = {
 {"unsigned", (void *)&string_to_unsigned},
 {"const char *", (void *)&string_to_char_ptr}
 };
 
-//TODO this return should be more flexible
-char *wrap(vector<string> *args, vector<string> *types, void *fp)
+} //end namespace convert
+
+wrap::wrap()
 {
+
+}
+
+wrap::~wrap()
+{
+
+}
+
+//TODO this return should be more flexible
+char *wrap::call_i(vector<string> *args, vector<string> *types, FARPROC fp)
+{
+    cout << "call_i" << endl;
+
     char *(*real_fp)() = (char *(*)())fp;
  
     if(args->size() != types->size()){
@@ -48,8 +70,8 @@ char *wrap(vector<string> *args, vector<string> *types, void *fp)
     int cnt = 0;
     
     for(string str : *types){
-        auto it = lookup.find(str);
-        if(it == lookup.end()){
+        auto it = convert::lookup.find(str);
+        if(it == convert::lookup.end()){
             return (char *) "invalid type";
         }
         uint64_t (*conv_fp)(string) = (uint64_t (*)(string))it->second;
@@ -110,19 +132,27 @@ char *wrap(vector<string> *args, vector<string> *types, void *fp)
             break;
 
         default:
-            return (char *)"fixme:too many arguments";
+            return (char *)"fixme:too many arguments(more than four)";
     }
     
-    for(void *it : free_list){
-        free(it);
-    }
+    char *ret = (real_fp)();
     
-    return (real_fp)();
+    //this assumes that the function does not return a string it was passed
+    //otherwise it will break since the strings that it was passed were just
+    //freed
+    convert::str_free();
+    
+    return ret;
 }
 
-void call(char *cmd, unordered_map<string, string> *dllMap)
+char *wrap::call(string input)
 {
-    string module(strtok(cmd, ":"));
+    cout << "wrap::call with " << input.c_str() << endl << std::flush;
+
+    char *buf = (char *)malloc(input.length() + 1);
+    strcpy(buf, input.c_str());
+
+    string module(strtok(buf, ":"));
 
     string func(strtok(NULL, "("));
 
@@ -140,23 +170,13 @@ void call(char *cmd, unordered_map<string, string> *dllMap)
         }
     }
 
-    if(!dllMap->count(module)){
-        if(!load(module, dllMap)){
-            erl_send("loading module");
-        }else{
-            erl_send("failed to  load module");
-            return;
-        }
-    }
-
-    void *fp = (void *)GetProcAddress(GetModuleHandle(module.c_str()), func.c_str());
+    FARPROC fp = dll_utils::address(module, func);
 
     func.append("TYPE");
 
-    const char *types_raw = *(const char **)GetProcAddress(GetModuleHandle(module.c_str()), func.c_str());    
+    const char *types_raw = *(const char **)dll_utils::address(module, func);    
     
-    char *types_raw_cpy = (char *)malloc(strlen(types_raw));
-    assert(types_raw_cpy);
+    char *types_raw_cpy = (char *)malloc(strlen(types_raw) + 1);
     strcpy(types_raw_cpy, types_raw);
 
     vector<string> types;
@@ -171,27 +191,23 @@ void call(char *cmd, unordered_map<string, string> *dllMap)
         }
     }
 
-    char *ret = wrap(&args, &types, fp);
-
-    erl_send(ret);
-
-    free(types_raw_cpy);
-    free(ret);
-}
-
-bool load(string module, unordered_map<string, string> *dllMap)
-{
-    char cwd_buf[1024];
-    string dllName(_getcwd(cwd_buf, sizeof(cwd_buf)));
-    
-    dllName += "\\modules\\" + module + "\\" + module + ".dll";
-    
-    if(!LoadLibraryA(dllName.c_str())){
-        return true;
+    cout << "types:" << endl;
+    for( string tmpstr : types){
+        cout << tmpstr.c_str() << endl;
     }
     
-    dllMap->insert(make_pair<string, string>(module.c_str(), dllName.c_str()));
-    return false;
+    cout << "args:" << endl;
+    for( string tmpstr : args){
+        cout << tmpstr.c_str() << endl;
+    }
+    
+    char *ret = this->call_i(&args, &types, fp);
+    
+    cout << "here" << endl;
+    
+    free(types_raw_cpy);
+    
+    return ret;
 }
 
 }

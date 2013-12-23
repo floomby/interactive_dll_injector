@@ -1,20 +1,25 @@
-%% fixme: removing all spaces is a poor fix
-%% I think that I will do strings in quotes
-
+-export([prompt/0]).
 -export([prompt/1]).
--export([prompt/2]).
 
 -define(DEFAULT_PROMPT, "~>").
 
-prompt(Pid) ->
-	prompt(Pid, ?DEFAULT_PROMPT).
+prompt() ->
+	prompt(?DEFAULT_PROMPT).
 
-prompt(Pid, P) ->
+prompt(P) ->
 	case io:fread(P, "~s") of
 	{ok, ["quit"]} ->
 		exit(quit);
 	{ok, [X]} ->
-        %fixme: get rid of all the spcases
-		Pid ! X -- " ",
-		prompt(Pid, P)
+		fw(X),
+		prompt(P)
 	end.
+
+fw(Input) ->
+    [ Nm , Md | Fn ] = string:tokens(Input, ":"),
+    case lists:member(list_to_atom(Nm), registered()) of
+        true ->
+            whereis(list_to_atom(Nm)) ! Md ++ ":" ++ Fn;
+        false ->
+            io:format("framework node ~p does not exist~n", [Nm])
+    end.

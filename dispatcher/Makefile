@@ -1,3 +1,5 @@
+#we avoid the -static option since this breaks throwing exceptions across
+#dll boundries wich is something we might do
 CC = x86_64-w64-mingw32-g++ -std=c++11 -static-libstdc++ -static-libgcc -g
 
 
