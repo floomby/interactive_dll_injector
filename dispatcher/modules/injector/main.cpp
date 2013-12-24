@@ -12,7 +12,7 @@ extern "C" __declspec(dllexport) char *inject(unsigned ProcessID, const char *dl
     HANDLE Proc;
     LPVOID RemoteString, LoadLibAddy;
 
-    if(!ProcessID){
+    if(!ProcessID){ 
         char *ret = (char *)malloc(strlen(ERR_MSG));
         strcpy(ret, ERR_MSG);
         return ret;
