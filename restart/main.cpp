@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 
-#include <windows.h>
+#include "../framework2/framework.h"
 
 #include "target.h"
 #include "things/disasm.h"
@@ -12,10 +12,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if(argc != 2){
-        cerr << "usage: " << argv[0] <<  " <pid>" << endl;
+    if(argc != 3){
+        cerr << "usage: " << argv[0] <<  " <server> <port>" << endl;
         exit(EXIT_FAILURE);
     }
+    
+    framework::fw the_fw(argv[1], argv[2]);
     
     //load the library
     char cwd_buf[1024];
@@ -28,11 +30,10 @@ int main(int argc, char *argv[])
     }
     
     target *test = nullptr;
-    uint8_t *buf = nullptr;
     
     try
     {
-        test = new target((DWORD)atoi(argv[1]));
+        test = new target((DWORD)atoi(argv[]));
         Sleep(1000);
         
         test->call("test", NULL);

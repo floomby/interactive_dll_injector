@@ -3,6 +3,8 @@
 
 #include "../params.h"
 
+// TODO shared memory
+
 extern "C" BOOL APIENTRY __declspec(dllexport) DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
     switch (fdwReason){
@@ -24,7 +26,3 @@ extern "C" __declspec(dllexport) char *test(void *param)
     MessageBoxA(NULL, "test", "test", MB_OK);
 }
 
-extern "C" __declspec(dllexport) char *flex_call(struct params *param)
-{
-    
-}

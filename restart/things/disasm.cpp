@@ -22,7 +22,7 @@ void disasm::write()
     cmd_str += "\\ndisasm.exe";
     std::string arg_str;
     arg_str += cmd_str.c_str();
-    arg_str += " -b 32 ";
+    arg_str += " -b 64 ";
     arg_str += this->name.str();
 
     //SECURITY_ATTRIBUTES tmp_atribs;
